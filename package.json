@@ -1,0 +1,14 @@
+{
+  "name": "supr-skills-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Supr Skills — Stories-format landing page (design prototype).",
+  "type": "module",
+  "scripts": {
+    "dev": "serve . -l 5173",
+    "start": "serve . -l 5173"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}
