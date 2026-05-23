@@ -6,15 +6,54 @@
 <title>Supr Skills — The future of learning is one tap away</title>
 <meta name="description" content="World-class free courses with an always-on AI buddy that watches the lecture with you and brings in a human expert when needed." />
 
+<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
+<!-- Brand tokens — source of truth, mirrors brand.config.ts in the production Astro project -->
+<script src="brand.config.js"></script>
+
+<!-- Tailwind Play CDN (production replaces this with `npx astro add tailwind`) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  // Production: this config lives in tailwind.config.ts and imports from brand.config.ts.
+  // Prototype: we read the same shape from window.brandConfig.
+  const _b = window.brandConfig;
+  tailwind.config = {
+    theme: {
+      screens: _b.screens,
+      extend: {
+        colors: _b.colors,
+        fontFamily: _b.typography.families,
+        spacing: _b.spacing,
+        height: { 'screen-safe': '100dvh' },
+        maxHeight: { 'screen-safe': '100dvh' },
+        minHeight: { 'screen-safe': '100dvh' },
+        boxShadow: {
+          'phone': '0 0 0 2px #2a1f3d, 0 0 0 12px #0d0917, 0 60px 120px -40px rgba(111, 92, 244, 0.5), 0 30px 80px -30px rgba(255, 122, 89, 0.25)',
+          'glow-coral': '0 14px 28px -10px rgba(255, 122, 89, 0.4)',
+          'ring-teal': '0 0 0 1px rgba(93, 217, 193, 0.6), 0 0 40px -10px rgba(93, 217, 193, 0.5)',
+        },
+        backgroundImage: {
+          'mesh-1': "radial-gradient(ellipse 80% 50% at 20% 10%, rgba(255, 122, 89, 0.55), transparent 60%), radial-gradient(ellipse 70% 60% at 90% 90%, rgba(111, 92, 244, 0.7), transparent 60%), radial-gradient(ellipse 60% 50% at 50% 50%, rgba(93, 217, 193, 0.18), transparent 60%), linear-gradient(180deg, #1a0c33, #0c0518)",
+          'warm-night': "radial-gradient(ellipse 90% 60% at 50% 100%, rgba(255, 122, 89, 0.35), transparent 60%), radial-gradient(ellipse 70% 50% at 50% 0%, rgba(111, 92, 244, 0.35), transparent 60%), linear-gradient(180deg, #160a2c, #0a0517)",
+          'deep': "linear-gradient(180deg, #120822, #0a0414 70%)",
+          'lecture-frame': "radial-gradient(ellipse 70% 50% at 30% 30%, rgba(111, 92, 244, 0.4), transparent 60%), linear-gradient(135deg, #4b3cd4, #2a1a4a)",
+          'reframe-bottom': "radial-gradient(ellipse 80% 60% at 30% 30%, rgba(255, 122, 89, 0.4), transparent 60%), linear-gradient(135deg, #4b3cd4, #1c103c)",
+        },
+      },
+    },
+  };
+</script>
+
+<!-- One-off styles: complex gradient meshes, AI buddy character, keyframes -->
 <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body class="font-display text-cream bg-ink antialiased overflow-hidden">
 <div id="root"></div>
 
+<!-- React + Babel for the prototype. Production uses Astro+Vite. -->
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>

@@ -1,7 +1,15 @@
 // All 9 slides for the Supr Skills landing story.
-// Each slide receives `{ active, onCTA }` props.
+// Per the plan §5.1.2: layout/spacing/typography/colors → Tailwind utilities.
+// Complex one-off styling (gradient meshes, AI buddy, portrait shoulders,
+// keyframes) lives in styles.css.
 
-const { useState, useEffect, useMemo } = React;
+const { useState, useEffect } = React;
+
+// Re-used base classes for the slide container
+const SLIDE_ROOT = "absolute inset-0 pt-24 pb-[110px] px-[26px] flex flex-col";
+const EYEBROW   = "font-mono text-[10px] tracking-[0.18em] uppercase text-cream/55 m-0";
+const CAPTION   = "font-display font-medium text-[26px] leading-[1.12] tracking-tight text-cream text-balance m-0";
+const HEADLINE  = "font-display font-semibold leading-none tracking-tight text-balance text-cream m-0";
 
 // ---------- helper: letter-by-letter reveal ----------
 function LetterReveal({ text, delay = 0, step = 22 }) {
@@ -28,16 +36,23 @@ function Slide1({ active }) {
   }, [active]);
 
   return (
-    <div className="slide-content bg-mesh-1 s1">
-      <span className="tag-corner">// THE FUTURE OF LEARNING</span>
-      <h1 className={"headline-display beat " + (beat === 0 ? "enter" : "exit")}>
+    <div className={`${SLIDE_ROOT} bg-mesh-1 drift items-center justify-center text-center`}>
+      <span className="absolute top-24 left-[26px] font-mono text-[10px] tracking-[0.16em] uppercase text-cream/60">
+        // THE FUTURE OF LEARNING
+      </span>
+      <h1 className={`${HEADLINE} text-[54px] absolute left-[26px] right-[26px] top-1/2 -translate-y-1/2 ${beat === 0 ? 'beat-in' : 'beat-out'}`}>
         {active && beat === 0 && <LetterReveal text="The AI race won't wait." />}
       </h1>
-      <h1 className={"headline-display beat " + (beat === 1 ? "enter" : "")} style={{opacity: beat === 1 ? undefined : 0}}>
+      <h1
+        className={`${HEADLINE} text-[54px] absolute left-[26px] right-[26px] top-1/2 -translate-y-1/2 ${beat === 1 ? 'beat-in' : ''}`}
+        style={{ opacity: beat === 1 ? undefined : 0 }}
+      >
         {active && beat === 1 && (
           <>
             <LetterReveal text="Neither should " />
-            <em><LetterReveal text="you." delay={300} /></em>
+            <em className="font-serif italic font-normal text-coral-soft tracking-tight">
+              <LetterReveal text="you." delay={300} />
+            </em>
           </>
         )}
       </h1>
@@ -48,21 +63,25 @@ function Slide1({ active }) {
 // ============================================================
 // SLIDE 2 — The Promise
 // ============================================================
-function Slide2({ active }) {
+function Slide2() {
   return (
-    <div className="slide-content bg-warm-night s2">
-      <div className="scene">
-        <div className="buddy-spot">
+    <div className={`${SLIDE_ROOT} bg-warm-night items-center justify-center text-center`}>
+      <div className="relative h-[360px] w-full flex items-center justify-center mt-3 mb-9">
+        <div className="absolute left-6 top-[60px]">
           <Buddy size="md" mood="idle" />
         </div>
-        <div className="laptop">
-          <div className="lec-frame">
-            <div className="scrub" />
+        <div className="absolute right-1 top-20 w-[200px] rounded-xl bg-aubergine border border-cream/15 p-[7px] float-laptop"
+          style={{ boxShadow: '0 20px 50px -20px rgba(111, 92, 244, 0.5)' }}>
+          <div className="lecture-frame relative rounded-[7px] overflow-hidden aspect-[16/10]"
+            style={{ background: 'linear-gradient(135deg, #2a1a4a, #4b3cd4)' }}>
+            <div className="absolute left-[8%] right-[8%] bottom-[10%] h-[3px] bg-white/20 rounded-sm">
+              <div className="absolute left-0 top-0 w-[38%] h-full bg-coral rounded-sm" />
+            </div>
           </div>
         </div>
       </div>
-      <p className="caption">
-        Learning, <em>finally</em><br/>with a companion.
+      <p className={CAPTION}>
+        Learning, <em className="font-serif italic font-normal">finally</em><br/>with a companion.
       </p>
     </div>
   );
@@ -73,37 +92,36 @@ function Slide2({ active }) {
 // ============================================================
 function Slide3({ active }) {
   return (
-    <div className="slide-content bg-warm-night s3">
-      <p className="eyebrow">// The curriculum</p>
-      <p className="caption">
+    <div className={`${SLIDE_ROOT} bg-warm-night`}>
+      <p className={`${EYEBROW} mt-2.5`}>// The curriculum</p>
+      <p className={`${CAPTION} mt-6`}>
         The world's best courses.<br/>
-        <em>Always</em> free.
+        <em className="font-serif italic font-normal">Always</em> free.
       </p>
-      <div className="badges" key={active ? "a" : "b"}>
-        <div className="badge">
-          <div className="badge-mark mit">M</div>
-          <div className="badge-info">
-            <div className="title">MIT OpenCourseWare</div>
-            <div className="sub">6.0001 · 6.S191 · 18.06 · +12 more</div>
+      <div className="mt-9 flex flex-col gap-4" key={active ? 'a' : 'b'}>
+        {[
+          { mark: 'M', label: 'MIT OpenCourseWare', sub: '6.0001 · 6.S191 · 18.06 · +12 more', bg: 'bg-[#8B0000] text-cream' },
+          { mark: 'cs', label: 'Harvard CS50', sub: 'CS · Web · AI · Cyber · Python', bg: 'bg-ink text-coral border border-coral/40' },
+          { mark: '⌘', label: 'Full-Stack Track', sub: 'React · Node · Postgres · Deploy', bg: 'text-cream', style: { background: 'linear-gradient(135deg, #FF7A59, #6F5CF4)' } },
+        ].map((b, i) => (
+          <div
+            key={b.label}
+            className="stagger-in flex items-center gap-4 px-[18px] py-[18px] bg-cream/5 border border-cream/10 rounded-[18px] backdrop-blur"
+            style={{ animationDelay: (0.2 + i * 0.3) + 's' }}
+          >
+            <div
+              className={`w-[52px] h-[52px] rounded-xl grid place-items-center font-serif italic text-[24px] font-normal flex-shrink-0 ${b.bg}`}
+              style={b.style}
+            >
+              {b.mark}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-display font-semibold text-[16px] text-cream tracking-tight">{b.label}</div>
+              <div className="font-mono text-[11px] text-cream/55 tracking-[0.04em] mt-0.5">{b.sub}</div>
+            </div>
+            <div className="font-mono text-[10px] tracking-[0.16em] uppercase text-coral px-2.5 py-[5px] border border-coral/40 rounded-md flex-shrink-0">Free</div>
           </div>
-          <div className="badge-free">Free</div>
-        </div>
-        <div className="badge">
-          <div className="badge-mark cs50">cs</div>
-          <div className="badge-info">
-            <div className="title">Harvard CS50</div>
-            <div className="sub">CS · Web · AI · Cyber · Python</div>
-          </div>
-          <div className="badge-free">Free</div>
-        </div>
-        <div className="badge">
-          <div className="badge-mark fs">⌘</div>
-          <div className="badge-info">
-            <div className="title">Full-Stack Track</div>
-            <div className="sub">React · Node · Postgres · Deploy</div>
-          </div>
-          <div className="badge-free">Free</div>
-        </div>
+        ))}
       </div>
     </div>
   );
@@ -114,40 +132,56 @@ function Slide3({ active }) {
 // ============================================================
 function Slide4({ active, onCTA }) {
   return (
-    <div className="slide-content bg-deep s4">
-      <p className="eyebrow">// AI buddy · live</p>
-      <div className="player">
-        <div className="player-frame">
-          <div className="lecture-board">
-            <span className="ln w90" />
-            <span className="ln w70" />
-            <span className="ln hl w90" />
-            <span className="ln w50" />
-            <div className="formula">∂L/∂w = −(y − ŷ) · x</div>
-            <span className="ln w70" />
+    <div className={`${SLIDE_ROOT} bg-deep`}>
+      <p className={EYEBROW}>// AI buddy · live</p>
+      <div className="w-full mt-7 rounded-[20px] border border-cream/15 overflow-hidden flex flex-col aspect-[9/14]"
+        style={{ background: 'linear-gradient(180deg, #1c103c, #0e0822)' }}>
+        <div className="flex-1 relative overflow-hidden bg-lecture-frame">
+          {/* Lecture board */}
+          <div className="absolute top-4 left-4 right-4 bottom-[110px] rounded-[10px] bg-ink/40 border border-cream/10 p-4 flex flex-col gap-2 backdrop-blur-sm">
+            <span className="h-1.5 w-[90%] rounded-sm bg-cream/25" />
+            <span className="h-1.5 w-[70%] rounded-sm bg-cream/25" />
+            <span className="h-1.5 w-[90%] rounded-sm bg-coral" style={{ boxShadow: '0 0 14px #FF7A59' }} />
+            <span className="h-1.5 w-[50%] rounded-sm bg-cream/25" />
+            <div className="mt-3 self-start font-mono text-[12px] text-coral-soft px-2.5 py-2 border border-dashed border-coral/40 rounded-md">
+              ∂L/∂w = −(y − ŷ) · x
+            </div>
+            <span className="h-1.5 w-[70%] rounded-sm bg-cream/25 mt-1" />
           </div>
-          <div className="cam-tile">
-            <div className="ava" />
-            <span className="signal" />
-            <span className="cam-label">YOU</span>
+          {/* Webcam tile */}
+          <div className="absolute top-3.5 right-3.5 w-[76px] h-[100px] rounded-[10px] border border-cream/20 overflow-hidden flex items-end justify-center pb-2"
+            style={{ background: 'linear-gradient(180deg, #2a1a4a, #14082a)' }}>
+            <div className="relative mb-2">
+              <div className="w-[46px] h-[46px] rounded-full" style={{ background: 'linear-gradient(135deg, #F4C16B, #e07a3a)' }} />
+              <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-[70px] h-[30px] rounded-t-[30px] bg-[#5a3a22]" />
+            </div>
+            <span className="absolute bottom-[5px] left-[6px] font-mono text-[9px] text-cream/70">YOU</span>
+            <span className="absolute top-[6px] right-[6px] w-[7px] h-[7px] rounded-full bg-coral" style={{ boxShadow: '0 0 8px #FF7A59' }} />
           </div>
-          <div className="buddy-bubble">
-            <Buddy size="sm" mood="listen" />
-            <div className="bubble">
+          {/* Buddy bubble */}
+          <div className="absolute left-3 bottom-[110px] flex items-end gap-2.5 max-w-[78%]">
+            <Buddy size="sm" mood="listen" className="flex-shrink-0 !w-14 !h-14" />
+            <div className="bg-cream text-ink rounded-[18px] rounded-bl-[4px] px-3 py-2.5 text-[12.5px] leading-[1.32] font-medium text-balance shadow-glow-coral">
               Looked like you replayed that — want me to break it down?
             </div>
           </div>
         </div>
-        <div className="player-controls">
-          <div className="play">▶</div>
-          <div className="scrub" />
-          <div className="time">08:42</div>
+        {/* Controls */}
+        <div className="px-4 py-3 bg-ink/70 border-t border-cream/10 flex items-center gap-3">
+          <div className="w-[30px] h-[30px] rounded-full bg-cream text-ink grid place-items-center text-[11px]">▶</div>
+          <div className="scrubber-paused-tag flex-1 relative h-[3px] bg-cream/[0.18] rounded-sm">
+            <div className="absolute left-0 top-0 h-full w-[32%] bg-coral rounded-sm" />
+          </div>
+          <div className="font-mono text-[10px] text-cream/55 tracking-wider">08:42</div>
         </div>
       </div>
-      <p className="caption">
-        Confused? <em>It already knows.</em>
+      <p className={`${CAPTION} mt-4`}>
+        Confused? <em className="font-serif italic font-normal">It already knows.</em>
       </p>
-      <button className="cta-btn cta-btn-secondary cta-floating" onClick={() => onCTA?.('see-it-live')}>
+      <button
+        onClick={() => onCTA?.('see-it-live')}
+        className="absolute right-5 bottom-9 inline-flex items-center gap-2 font-display font-medium text-[14px] px-[18px] py-3 rounded-full bg-cream/10 border border-cream/25 text-cream hover:bg-cream/15 backdrop-blur transition pointer-events-auto"
+      >
         See it live <span>→</span>
       </button>
     </div>
@@ -157,29 +191,37 @@ function Slide4({ active, onCTA }) {
 // ============================================================
 // SLIDE 5 — Real Humans, On Standby
 // ============================================================
-function Slide5({ active }) {
+function Slide5() {
   return (
-    <div className="slide-content bg-deep s5">
-      <p className="eyebrow">// When AI hits its limit</p>
-      <div className="row">
-        <div className="pane buddy-pane">
-          <span className="label">AI Buddy</span>
-          <span className="signal" />
+    <div className={`${SLIDE_ROOT} bg-deep`}>
+      <p className={EYEBROW}>// When AI hits its limit</p>
+      <div className="flex items-end gap-2 mt-3 h-[280px] relative">
+        {/* Buddy pane (dimmed) */}
+        <div className="flex-1 h-full rounded-[18px] border border-cream/10 relative overflow-hidden flex items-end justify-center p-4"
+          style={{ background: 'radial-gradient(ellipse 80% 50% at 50% 30%, rgba(111, 92, 244, 0.4), transparent 60%), linear-gradient(180deg, #1c103c, #0e0822)' }}>
+          <span className="absolute top-3 left-3.5 font-mono text-[9px] tracking-[0.14em] uppercase text-cream/70">AI Buddy</span>
+          <span className="absolute top-3 right-3.5 w-[7px] h-[7px] rounded-full bg-cream/40" />
           <Buddy size="sm" mood="dim" />
         </div>
-        <div className="pane expert-pane">
-          <span className="label">Expert · Live</span>
-          <span className="signal" />
-          <div className="expert-avatar">
-            <div className="expert-head" />
+        {/* Expert pane (active) */}
+        <div className="flex-1 h-full rounded-[18px] border border-cream/10 relative overflow-hidden flex items-end justify-center p-4 shadow-ring-teal"
+          style={{ background: 'radial-gradient(ellipse 80% 50% at 50% 30%, rgba(93, 217, 193, 0.3), transparent 60%), linear-gradient(180deg, #102c2a, #061a18)' }}>
+          <span className="absolute top-3 left-3.5 font-mono text-[9px] tracking-[0.14em] uppercase text-cream/70">Expert · Live</span>
+          <span className="absolute top-3 right-3.5 w-[7px] h-[7px] rounded-full bg-teal" style={{ boxShadow: '0 0 10px #5DD9C1' }} />
+          <div className="absolute inset-x-6 top-8 bottom-[60px] rounded-xl overflow-hidden flex items-end justify-center"
+            style={{ background: 'linear-gradient(180deg, #2a1a3a, #0a0517)' }}>
+            <div className="expert-portrait mb-7">
+              <div className="w-[90px] h-[90px] rounded-full"
+                style={{ background: 'linear-gradient(135deg, #d8a890, #8b5a45)' }} />
+            </div>
           </div>
-          <span className="expert-name">Priya R.</span>
-          <span className="expert-role">ML · 8 yrs</span>
+          <span className="absolute bottom-3 left-3.5 font-display font-semibold text-[13px] text-cream">Priya R.</span>
+          <span className="absolute bottom-3.5 right-3.5 font-mono text-[9px] tracking-wider uppercase text-teal">ML · 8 yrs</span>
         </div>
       </div>
-      <p className="caption">
+      <p className={`${CAPTION} mt-7`}>
         When AI isn't enough,<br/>
-        <em>a human is.</em>
+        <em className="font-serif italic font-normal">a human is.</em>
       </p>
     </div>
   );
@@ -189,46 +231,68 @@ function Slide5({ active }) {
 // SLIDE 6 — Ship Something Real
 // ============================================================
 function Slide6({ active, onCTA }) {
+  const codeLines = [
+    <><span className="text-coral">import</span> {"{ "}useState{" }"} <span className="text-coral">from</span> <span className="text-teal">"react"</span></>,
+    <span className="text-cream/35 italic">{"// your first screen"}</span>,
+    <><span className="text-coral">export default function</span> <span className="text-gold">App</span>() {"{"}</>,
+    <>{"  "}<span className="text-coral">const</span> [city, setCity] = <span className="text-gold">useState</span>(<span className="text-teal">"Hyderabad"</span>)</>,
+    <>{"  "}<span className="text-coral">return</span> (</>,
+    <>{"    "}{"<"}<span className="text-gold">Card</span> title={"{"}city{"}"} /{">"}</>,
+    <>{"  "})</>,
+    <>{"}"}</>,
+  ];
   return (
-    <div className="slide-content bg-warm-night s6">
-      <p className="eyebrow">// Build · week 1</p>
-      <div className="build-scene" key={active ? "a" : "b"}>
-        <div className="code-window">
-          <span className="line"><span className="kw">import</span> {"{ "}useState{" }"} <span className="kw">from</span> <span className="str">"react"</span></span>
-          <span className="line"><span className="com">// your first screen</span></span>
-          <span className="line"><span className="kw">export default function</span> <span className="fn">App</span>() {"{"}</span>
-          <span className="line">{"  "}<span className="kw">const</span> [city, setCity] = <span className="fn">useState</span>(<span className="str">"Hyderabad"</span>)</span>
-          <span className="line">{"  "}<span className="kw">return</span> (</span>
-          <span className="line">{"    "}{"<"}<span className="fn">Card</span> title={"{"}city{"}"} /{">"}</span>
-          <span className="line">{"  "})</span>
-          <span className="line">{"}"}</span>
+    <div className={`${SLIDE_ROOT} bg-warm-night`}>
+      <p className={EYEBROW}>// Build · week 1</p>
+      <div className="mt-6 grid gap-3.5 h-[380px]" style={{ gridTemplateColumns: '1fr 132px' }} key={active ? 'a' : 'b'}>
+        {/* Code window */}
+        <div className="rounded-[14px] bg-aubergine border border-cream/12 p-3.5 font-mono text-[10.5px] leading-[1.65] text-cream overflow-hidden relative">
+          <span className="absolute top-1 right-3 font-mono text-[9px] tracking-wider text-cream/40">App.tsx</span>
+          {codeLines.map((line, i) => (
+            <span
+              key={i}
+              className="block fade-in"
+              style={{ animationDelay: (0.4 + i * 0.2) + 's' }}
+            >
+              {line}
+            </span>
+          ))}
         </div>
-        <div className="mini-phone">
-          <div className="screen">
-            <span className="app-title">Tiffin</span>
-            <span className="app-sub">today's plate</span>
-            <div className="card">
-              <div className="row1"><span className="dot" /><span className="title">Hyderabad</span></div>
-              <span className="ln" />
-              <span className="ln short" />
+        {/* Mini phone */}
+        <div className="rounded-[22px] bg-black border-2 border-[#2a1f3d] p-1.5 relative overflow-hidden">
+          <div className="rounded-[16px] h-full px-2.5 pt-3.5 pb-3.5 flex flex-col relative overflow-hidden"
+            style={{ background: 'linear-gradient(180deg, #F7F1E8, #EFE5D2)' }}>
+            <span className="font-display font-bold text-[13px] text-ink tracking-tight">Tiffin</span>
+            <span className="text-[9px] text-ink/55 mt-0.5">today's plate</span>
+            {['Hyderabad', 'Order #042', 'Rider'].map((t, i) => (
+              <div
+                key={t}
+                className="fade-in mt-2.5 bg-cream border border-ink/10 rounded-lg p-2 flex flex-col gap-1"
+                style={{ animationDelay: (1.0 + i * 0.4) + 's' }}
+              >
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3.5 h-3.5 rounded-full" style={{ background: 'linear-gradient(135deg, #FF7A59, #6F5CF4)' }} />
+                  <span className="text-[10px] font-semibold text-ink">{t}</span>
+                </div>
+                <span className="h-1 bg-ink/10 rounded-sm" />
+                {i === 0 && <span className="h-1 w-[60%] bg-ink/10 rounded-sm" />}
+              </div>
+            ))}
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 font-mono text-[8px] tracking-[0.12em] uppercase text-coral flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-coral pulse-coral" style={{ boxShadow: '0 0 6px #FF7A59' }} />
+              Live
             </div>
-            <div className="card">
-              <div className="row1"><span className="dot" /><span className="title">Order #042</span></div>
-              <span className="ln short" />
-            </div>
-            <div className="card">
-              <div className="row1"><span className="dot" /><span className="title">Rider</span></div>
-              <span className="ln" />
-            </div>
-            <div className="running">Live</div>
           </div>
         </div>
       </div>
-      <p className="caption">
+      <p className={`${CAPTION} mt-5`}>
         Your first app.<br/>
-        <em>Before the week ends.</em>
+        <em className="font-serif italic font-normal">Before the week ends.</em>
       </p>
-      <button className="cta-btn cta-btn-primary cta-floating" onClick={() => onCTA?.('start-building')}>
+      <button
+        onClick={() => onCTA?.('start-building')}
+        className="absolute right-5 bottom-9 inline-flex items-center gap-2 font-display font-medium text-[14px] px-[18px] py-3 rounded-full bg-cream text-ink hover:bg-coral hover:text-cream transition pointer-events-auto"
+      >
         Start building <span>→</span>
       </button>
     </div>
@@ -247,36 +311,50 @@ function Slide7({ active, onCTA }) {
   }, [active]);
 
   return (
-    <div className="slide-content bg-split s7">
-      <p className="eyebrow">// The math</p>
-      <div className="split-stack">
-        <div className="split-pane top">
-          <span className="label">Bootcamp · 24 wks</span>
-          <div className="bootcamp-mock">
-            <div className="row"><div className="box" /><div className="lines"><div className="ln" /><div className="ln short" /></div></div>
-            <div className="row"><div className="box" /><div className="lines"><div className="ln" /><div className="ln short" /></div></div>
-            <div className="row"><div className="box" /><div className="lines"><div className="ln" /><div className="ln short" /></div></div>
+    <div className={`${SLIDE_ROOT} bg-ink`}>
+      <p className={EYEBROW}>// The math</p>
+      <div className="mt-1 flex flex-col gap-3 h-[380px]">
+        {/* Top: greyed bootcamp */}
+        <div className="flex-1 rounded-[16px] overflow-hidden relative border border-cream/10 saturate-[0.2] flex items-center justify-center"
+          style={{ background: 'linear-gradient(180deg, #2a2a2a, #161616)' }}>
+          <span className="absolute top-3 left-3.5 font-mono text-[9px] tracking-[0.14em] uppercase text-[#999]">Bootcamp · 24 wks</span>
+          <div className="absolute inset-8 flex flex-col gap-2">
+            {[0, 1, 2].map(i => (
+              <div className="flex items-center gap-2.5" key={i}>
+                <div className="w-7 h-7 bg-[#444] rounded" />
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <div className="h-[5px] bg-[#4a4a4a] rounded-sm" />
+                  <div className="h-[5px] w-[60%] bg-[#4a4a4a] rounded-sm" />
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="price-tag">
-            <span className="strike">₹3,20,000</span>
+          <div className="font-display font-bold text-[30px] tracking-tight text-[#888] z-10">
+            <span className="line-through decoration-[3px] decoration-coral">₹3,20,000</span>
           </div>
         </div>
-        <div className="split-pane bottom">
-          <span className="label">Supr Skills · forever</span>
-          <div className="price-tag">
-            Less than <em>dinner.</em>
-            <span className="small">≈ ₹499 / month · cancel anytime</span>
+        {/* Bottom: vibrant Supr */}
+        <div className="flex-1 rounded-[16px] overflow-hidden relative border border-cream/10 bg-reframe-bottom flex items-center justify-center">
+          <span className="absolute top-3 left-3.5 font-mono text-[9px] tracking-[0.14em] uppercase text-cream/85">Supr Skills · forever</span>
+          <div className="font-display font-bold text-[34px] tracking-tight text-cream text-center">
+            Less than <em className="font-serif italic font-normal text-coral-soft">dinner.</em>
+            <span className="block font-mono text-[10px] font-normal tracking-wider uppercase mt-2 text-cream/60">
+              ≈ ₹499 / month · cancel anytime
+            </span>
           </div>
         </div>
       </div>
-      <p className="caption" key={beat}>
+      <p className={`${CAPTION} absolute left-[26px] right-[26px] bottom-36 text-[22px] text-left`} key={beat}>
         {beat === 0 ? (
-          <>Bootcamps cost <em>lakhs.</em></>
+          <>Bootcamps cost <em className="font-serif italic font-normal">lakhs.</em></>
         ) : (
-          <>This costs less than <em>dinner.</em></>
+          <>This costs less than <em className="font-serif italic font-normal">dinner.</em></>
         )}
       </p>
-      <button className="cta-btn cta-btn-link cta-bottom" onClick={() => onCTA?.('compare')}>
+      <button
+        onClick={() => onCTA?.('compare')}
+        className="absolute left-[26px] bottom-[100px] font-display text-[13px] text-cream underline underline-offset-4 decoration-cream/40 hover:decoration-cream py-2 pointer-events-auto"
+      >
         See how we compare →
       </button>
     </div>
@@ -287,29 +365,33 @@ function Slide7({ active, onCTA }) {
 // SLIDE 8 — Who It's For
 // ============================================================
 function Slide8({ active }) {
+  const cards = [
+    { kind: 'grad',    portrait: 'from-[#F4C16B] to-[#c08840]', shoulders: 'portrait-shoulders-purple', label: 'Graduates', sub: 'First job · 0–2 yrs' },
+    { kind: 'student', portrait: 'from-[#d8a890] to-[#8b5a45]', shoulders: 'portrait-shoulders-coral',  label: 'Students',  sub: 'Final years · interns' },
+    { kind: 'pro',     portrait: 'from-[#e8c8a0] to-[#8a6a45]', shoulders: 'portrait-shoulders-teal',   label: 'Engineers', sub: 'Upskilling · AI · ML' },
+  ];
   return (
-    <div className="slide-content bg-warm-night s8">
-      <p className="eyebrow">// Built for</p>
-      <div className="who-row" key={active ? "a" : "b"}>
-        <div className="who-card">
-          <div className="who-portrait grad" />
-          <div className="who-label">Graduates</div>
-          <div className="who-sub">First job · 0–2 yrs</div>
-        </div>
-        <div className="who-card">
-          <div className="who-portrait student" />
-          <div className="who-label">Students</div>
-          <div className="who-sub">Final years · interns</div>
-        </div>
-        <div className="who-card">
-          <div className="who-portrait pro" />
-          <div className="who-label">Engineers</div>
-          <div className="who-sub">Upskilling · AI · ML</div>
-        </div>
+    <div className={`${SLIDE_ROOT} bg-warm-night`}>
+      <p className={EYEBROW}>// Built for</p>
+      <div className="mt-8 flex gap-3 h-[290px]" key={active ? 'a' : 'b'}>
+        {cards.map((c, i) => (
+          <div
+            key={c.kind}
+            className="stagger-in flex-1 rounded-[18px] border border-cream/10 px-3 py-4 flex flex-col items-center justify-end text-center"
+            style={{
+              animationDelay: (0.15 + i * 0.3) + 's',
+              background: 'linear-gradient(180deg, rgba(111, 92, 244, 0.18), rgba(20, 12, 38, 0.4))',
+            }}
+          >
+            <div className={`portrait ${c.shoulders} w-16 h-16 rounded-full mb-4 bg-gradient-to-br ${c.portrait}`} />
+            <div className="font-display font-semibold text-[14px] text-cream tracking-tight">{c.label}</div>
+            <div className="font-mono text-[10px] text-cream/55 mt-1 tracking-wider uppercase">{c.sub}</div>
+          </div>
+        ))}
       </div>
-      <p className="caption">
+      <p className={`${CAPTION} mt-9`}>
         Built for engineers.<br/>
-        <em>Every stage.</em>
+        <em className="font-serif italic font-normal">Every stage.</em>
       </p>
     </div>
   );
@@ -318,28 +400,37 @@ function Slide8({ active }) {
 // ============================================================
 // SLIDE 9 — Final CTA (parks here)
 // ============================================================
-function Slide9({ active, onCTA, ctaCopy = "Join the waitlist" }) {
+function Slide9({ onCTA, ctaCopy = "Join the waitlist" }) {
   return (
-    <div className="slide-content bg-mesh-1 s9">
-      <div className="buddy-spot">
+    <div className={`${SLIDE_ROOT} bg-mesh-1 drift items-center text-center`}>
+      <div className="mt-2 mb-6">
         <Buddy size="lg" mood="idle" />
       </div>
-      <h1 className="headline-display">
+      <h1 className={`${HEADLINE} text-[44px] text-center`}>
         The future of learning<br/>
-        is <em>one tap</em> away.
+        is <em className="font-serif italic font-normal text-coral">one tap</em> away.
       </h1>
-      <p className="subtext">
-        First 500 learners get<br/><span style={{color: 'var(--cream)'}}>lifetime access. Free.</span>
+      <p className="mt-5 font-mono text-[13.5px] text-cream/65 tracking-wide text-center text-balance">
+        First 500 learners get<br/>
+        <span className="text-cream">lifetime access. Free.</span>
       </p>
-      <div className="cta-actions">
-        <button className="cta-btn cta-btn-primary" onClick={() => onCTA?.('waitlist')}>
+      <div className="mt-7 flex flex-col gap-2.5 w-full">
+        <button
+          onClick={() => onCTA?.('waitlist')}
+          className="inline-flex items-center justify-center gap-2 font-display font-medium text-[14px] px-[18px] py-3.5 rounded-full bg-cream text-ink hover:bg-coral hover:text-cream transition pointer-events-auto"
+        >
           {ctaCopy}
         </button>
-        <button className="cta-btn cta-btn-secondary" onClick={() => onCTA?.('tour')}>
+        <button
+          onClick={() => onCTA?.('tour')}
+          className="inline-flex items-center justify-center gap-2 font-display font-medium text-[14px] px-[18px] py-3.5 rounded-full bg-cream/10 border border-cream/25 text-cream hover:bg-cream/15 backdrop-blur transition pointer-events-auto"
+        >
           Watch the 60-second tour
         </button>
       </div>
-      <div className="parked-tag">tap left to revisit</div>
+      <div className="absolute bottom-7 left-1/2 -translate-x-1/2 font-mono text-[10px] tracking-[0.16em] uppercase text-cream/35">
+        tap left to revisit
+      </div>
     </div>
   );
 }
