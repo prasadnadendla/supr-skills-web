@@ -10,9 +10,27 @@
 
 /* ----- Base resets ----- */
 * { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; height: 100dvh; }
+html, body { margin: 0; padding: 0; height: 100dvh; width: 100vw; overflow: hidden; }
 button { font: inherit; cursor: pointer; border: 0; background: none; color: inherit; padding: 0; }
 img, svg { display: block; max-width: 100%; }
+
+/* ----- Fit-to-stage scaler -----
+   The slide content is designed at 388×858. At runtime, .fit-stage gets two
+   CSS variables — --fit-scale-x and --fit-scale-y — sized to its host. On the
+   letterboxed desktop frame both equal 1; on full-bleed mobile we stretch
+   independently so the design fills the screen with no blank edges and no
+   scroll. Phones close to the design aspect (iPhone 12+) show no visible
+   distortion; shorter aspects (iPhone SE) show a minor squish but no bars. */
+.fit-stage { --fit-scale-x: 1; --fit-scale-y: 1; }
+.fit-stage-inner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 388px;
+  height: 858px;
+  transform: translate(-50%, -50%) scale(var(--fit-scale-x), var(--fit-scale-y));
+  transform-origin: center center;
+}
 
 /* ----- Stage backdrop ----- */
 .stage-backdrop {

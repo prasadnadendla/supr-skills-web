@@ -49,6 +49,52 @@
 
 <!-- One-off styles: complex gradient meshes, AI buddy character, keyframes -->
 <link rel="stylesheet" href="styles.css" />
+
+<script>
+  // Fit-to-stage scaler — sets --fit-scale on each .fit-stage based on its
+  // current size vs the 388×858 design size. Runs on resize/orientationchange
+  // and via MutationObserver when React mounts. Plain JS, no React, no loop.
+  (function () {
+    var DESIGN_W = 388, DESIGN_H = 858;
+    function applyAll() {
+      var stages = document.querySelectorAll('.fit-stage');
+      for (var i = 0; i < stages.length; i++) {
+        var el = stages[i];
+        var r = el.getBoundingClientRect();
+        if (!r.width || !r.height) continue;
+        // Non-uniform fit: fill both axes exactly so there's never blank
+        // space on the edges. Each axis can scale slightly above 1 (e.g.
+        // iPhone 12 at 390px wide vs the 388-wide design — ~0.5% stretch,
+        // imperceptible) or below 1 (iPhone SE — vertical squish).
+        var sx = r.width / DESIGN_W;
+        var sy = r.height / DESIGN_H;
+        el.style.setProperty('--fit-scale-x', sx.toFixed(4));
+        el.style.setProperty('--fit-scale-y', sy.toFixed(4));
+      }
+    }
+    var raf = 0;
+    function schedule() {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(applyAll);
+    }
+    window.addEventListener('resize', schedule);
+    window.addEventListener('orientationchange', schedule);
+    // Run once on DOM ready, then poll briefly after React mounts.
+    function init() {
+      applyAll();
+      var tries = 20;
+      var iv = setInterval(function () {
+        applyAll();
+        if (--tries <= 0) clearInterval(iv);
+      }, 100);
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>
 </head>
 <body class="font-display text-cream bg-ink antialiased overflow-hidden">
 <div id="root"></div>

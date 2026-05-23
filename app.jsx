@@ -47,7 +47,7 @@ function App() {
 
   return (
     <>
-      <div className="stage-backdrop fixed inset-0 grid place-items-center p-6 frame:p-6 phone:p-0">
+      <div className="stage-backdrop fixed inset-0 grid place-items-center p-6 frame:p-6 phone:p-0 overflow-hidden">
         <div className="stage-noise absolute inset-0 pointer-events-none opacity-50 mix-blend-overlay" />
 
         {t.showStageChrome && (
@@ -77,7 +77,13 @@ function App() {
           <div className="absolute left-1/2 top-3.5 -translate-x-1/2 w-[116px] h-8 bg-black rounded-[18px] z-[60] pointer-events-none phone:hidden" />
           <div className="absolute inset-1.5 rounded-[46px] overflow-hidden bg-ink
                           phone:inset-0 phone:rounded-none">
-            <StoriesShell slides={SLIDES} onCTA={handleCTA} slideProps={{ ctaCopy: t.ctaCopy }} />
+            {/* Inner stage — fixed 388×858 design, scaled via CSS custom prop
+                (--fit-scale) to fit the viewport with no scroll on any size. */}
+            <div className="fit-stage absolute inset-0 overflow-hidden">
+              <div className="fit-stage-inner">
+                <StoriesShell slides={SLIDES} onCTA={handleCTA} slideProps={{ ctaCopy: t.ctaCopy }} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
