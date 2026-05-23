@@ -1,0 +1,18 @@
+---
+// Landing page entry. The whole interactive experience is a single React
+// island — see src/components/App.tsx for the composition.
+//
+// Why one big island and not multiple: the Stories shell, phone frame, and
+// slides share state (current slide index, pause flag, CTA handler) and are
+// all interactive. Splitting into separate islands would mean either
+// duplicating state-passing through a store, or hydrating the parent
+// anyway — neither buys us a JS budget win. The static HTML payload is
+// still tiny because everything outside <App /> is plain Astro.
+
+import Base from '@/layouts/Base.astro';
+import App from '@/components/App';
+---
+
+<Base>
+  <App client:load />
+</Base>
